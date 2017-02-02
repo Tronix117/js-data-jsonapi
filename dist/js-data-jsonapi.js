@@ -108,7 +108,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 	    JsonApiAdapter.prototype.DeSerializeJsonResponse = function (resourceConfig, response) {
 	        var _this = this;
-	        if (Helper.JsonApiHelper.ContainsJsonApiContentTypeHeader(response.headers)) {
+	        if (Helper.JsonApiHelper.ContainsJsonApiContentTypeHeader(response.headers, this.defaults.jsonApi.contentTypes)) {
 	            if (response.data.errors) {
 	                response.data = Helper.JsonApiHelper.FromJsonApiError(response.data);
 	            }
@@ -144,7 +144,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return options.deserialize(config, error);
 	    };
 	    JsonApiAdapter.prototype.getPath = function (method, resourceConfig, id, options) {
-	        if (Helper.JsonApiHelper.ContainsJsonApiContentTypeHeader(this.DSUtils.get(options, 'headers'))) {
+	        if (Helper.JsonApiHelper.ContainsJsonApiContentTypeHeader(this.DSUtils.get(options, 'headers'), this.defaults.jsonApi.contentTypes)) {
 	            var item;
 	            if (this.DSUtils._sn(id)) {
 	                item = resourceConfig.get(id);
@@ -220,7 +220,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        var _this = this;
 	        return this.adapterHTTP.apply(this.adapter, [options])
 	            .then(function (response) {
-	            if (Helper.JsonApiHelper.ContainsJsonApiContentTypeHeader(_this.DSUtils.get(options, 'headers'))) {
+	            if (Helper.JsonApiHelper.ContainsJsonApiContentTypeHeader(_this.DSUtils.get(options, 'headers'), _this.defaults.jsonApi.contentTypes)) {
 	                if (response.status === HttpNoContent && options['method'] && (options['method'] === 'put' || options['method'] === 'patch')) {
 	                    if (options['data']) {
 	                        response.status = 200;
@@ -640,8 +640,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	        return false;
 	    };
-	    JsonApiHelper.ContainsJsonApiContentTypeHeader = function (headers) {
-	        return JsonApiHelper.ContainsHeader(headers, 'Content-Type', jsonApiContentType);
+	    JsonApiHelper.ContainsJsonApiContentTypeHeader = function (headers, contentTypes) {
+	        contentTypes = [jsonApiContentType].concat(contentTypes);
+	        for (var i = 0, l = contentTypes.length; i < l; i++) {
+	            if (JsonApiHelper.ContainsHeader(headers, 'Content-Type', contentTypes[i])) {
+	                return true;
+	            }
+	        }
+	        return false;
 	    };
 	    JsonApiHelper.AddJsonApiContentTypeHeader = function (headers) {
 	        headers['Content-Type'] = jsonApiContentType;

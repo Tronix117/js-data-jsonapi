@@ -7,11 +7,14 @@ declare module JsonApiAdapter {
         usePATCH?: boolean;
 
         // Set to true to force objects relationships to be sent when updating an objet, default false
-        updateRelationships?: boolean,
+        updateRelationships?: boolean;
 
         // Do not set globally, used to override the url for a resource
         // This is set internally using the self link of objects or relationships
         jsonApiPath?: string;
+
+        // Accepted contentTypes, default JSONApi contentType will be accepted anyway
+        contentTypes?: string | [string];
 
     }
 

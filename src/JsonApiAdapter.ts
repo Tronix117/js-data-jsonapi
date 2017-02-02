@@ -85,7 +85,7 @@ export class JsonApiAdapter implements JSData.IDSAdapter {
 
     DeSerializeJsonResponse(resourceConfig: JSData.DSResourceDefinition<any>, response: JSData.DSHttpAdapterPromiseResolveType): any {
         //Only process JSON Api responses!!
-        if (Helper.JsonApiHelper.ContainsJsonApiContentTypeHeader(response.headers)) {
+        if (Helper.JsonApiHelper.ContainsJsonApiContentTypeHeader(response.headers, this.defaults.jsonApi.contentTypes)) {
             // Decode Json API Error response
             if (response.data.errors) {
                 response.data = Helper.JsonApiHelper.FromJsonApiError(response.data);
@@ -143,7 +143,7 @@ export class JsonApiAdapter implements JSData.IDSAdapter {
     getPath(method: string, resourceConfig: JSData.DSResourceDefinition<any>, id: Object, options: JSData.DSConfiguration): string {
 
         //(<JsonApiAdapter.DSJsonApiAdapterOptions>options).jsonApi.jsonApiPath;
-        if (Helper.JsonApiHelper.ContainsJsonApiContentTypeHeader(this.DSUtils.get<{ [name: string]: string }>(options, 'headers'))) {
+        if (Helper.JsonApiHelper.ContainsJsonApiContentTypeHeader(this.DSUtils.get<{ [name: string]: string }>(options, 'headers'), this.defaults.jsonApi.contentTypes)) {
             //Get the resource item
             var item: JsonApi.JsonApiData;
             if (this.DSUtils._sn(id)) {
@@ -303,7 +303,7 @@ export class JsonApiAdapter implements JSData.IDSAdapter {
             .then((response: JSData.DSHttpAdapterPromiseResolveType) => {
 
                 // If this is notjson API fall backtostandard Http adapter behaviour
-                if (Helper.JsonApiHelper.ContainsJsonApiContentTypeHeader(this.DSUtils.get<{ [name: string]: string }>(options, 'headers'))) {
+                if (Helper.JsonApiHelper.ContainsJsonApiContentTypeHeader(this.DSUtils.get<{ [name: string]: string }>(options, 'headers'), this.defaults.jsonApi.contentTypes)) {
                     // Need to handle server 204 no content
                     // In the case where the server saves exactly what was sent it is possible that the server will not reply with data
                     // but instead reply with 204, NoContent

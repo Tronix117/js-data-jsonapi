@@ -500,8 +500,14 @@ export class JsonApiHelper {
         return false;
     }
 
-    public static ContainsJsonApiContentTypeHeader(headers: { [name: string]: string }): boolean {
-        return JsonApiHelper.ContainsHeader(headers, 'Content-Type', jsonApiContentType);
+    public static ContainsJsonApiContentTypeHeader(headers: { [name: string]: string }, contentTypes: [string]|string): boolean {
+        contentTypes = <[string]>[jsonApiContentType].concat(<string>contentTypes);
+        for (let i = 0, l = contentTypes.length; i < l; i++) {
+          if (JsonApiHelper.ContainsHeader(headers, 'Content-Type', contentTypes[i])) {
+              return true;
+          }
+        }
+        return false;
     }
 
     public static AddJsonApiContentTypeHeader(headers: { [name: string]: string }): void {
